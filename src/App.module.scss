@@ -1,0 +1,14 @@
+@use 'globals' as *;
+
+* {
+  box-sizing: border-box;
+  margin:0;
+  padding:0;
+  cursor: default;
+  color: $text;
+}
+
+.App {
+  text-align: center;
+}
+
