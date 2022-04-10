@@ -10,7 +10,7 @@ export interface WeatherState {
     min_temp: number;
     max_temp: number;
     the_temp: number;
-    wind_direction_compass:  string;
+    wind_direction_compass: string;
     wind_speed: number;
     humidity: number;
   }>;
@@ -25,8 +25,17 @@ const initialState: WeatherState = {
 
 export const getLocationAsync = createAsyncThunk(
   'weather/getLocation',
-  async (amount: number) => {
-    console.log('got latitude and longitude and found location');
+  async (query: string) => {
+    try {
+      const response = await fetch(
+        `https://www.metaweather.com/api/location/search/?query=${query}`
+      );
+      const data = response.json();
+      return data
+    } catch (err: any) {
+      console.log(err);
+      return err.message
+    }
   }
 );
 
@@ -46,9 +55,12 @@ export const weatherSlice = createSlice({
       .addCase(getLocationAsync.pending, state => {
         state.status = 'loading';
       })
-      .addCase(getLocationAsync.fulfilled, (state, action) => {
-        console.log('state updating');
-      })
+      .addCase(
+        getLocationAsync.fulfilled,
+        (state, action: PayloadAction<number>) => {
+          state.woeid = action.payload;
+        }
+      )
       .addCase(getWeatherAsync.pending, state => {
         state.status = 'loading';
       })
