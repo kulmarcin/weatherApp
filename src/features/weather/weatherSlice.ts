@@ -1,41 +1,46 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
 
+
+interface gotWeather {
+  name: string;
+  main: string;
+  description: string;
+  temp: number;
+  feels_like: number;
+  temp_min: number;
+  temp_max: number;
+}
+
 export interface WeatherState {
-  woeid: number | null;
-  weather: Array<{
-    weather_state_name: string;
-    weather_state_abbr: string;
-    applicable_date: Date;
-    min_temp: number;
-    max_temp: number;
-    the_temp: number;
-    wind_direction_compass: string;
-    wind_speed: number;
-    humidity: number;
-  }>;
+  weather: gotWeather | null;
   status: 'idle' | 'loading' | 'failed';
 }
 
 const initialState: WeatherState = {
-  woeid: null,
-  weather: [], //weather for 6 days
+  weather: null,
   status: 'idle'
 };
 
-export const getLocationAsync = createAsyncThunk(
+export const getWeatherFromNameAsync = createAsyncThunk(
   'weather/getLocation',
-  async (query: string) => {
-    try {
+  async (query: string):Promise<gotWeather> => {
+    
       const response = await fetch(
-        `https://www.metaweather.com/api/location/search/?query=${query}`
+        `https://api.openweathermap.org/data/2.5/weather?q=${query}&appid=${process.env.REACT_APP_KEY}&units=metric`
       );
-      const data = response.json();
-      return data
-    } catch (err: any) {
-      console.log(err);
-      return err.message
-    }
+      const data = await response.json();
+      const obj = {
+        name: data.name,
+        main: data.weather.main,
+        description: data.weather.description,
+        temp: data.main.temp,
+        feels_like: data.main.feels_like,
+        temp_min: data.main.temp_min,
+        temp_max: data.main.temp_max
+      };
+      return obj;
+    
   }
 );
 
@@ -52,13 +57,13 @@ export const weatherSlice = createSlice({
   reducers: {},
   extraReducers: builder => {
     builder
-      .addCase(getLocationAsync.pending, state => {
+      .addCase(getWeatherFromNameAsync.pending, state => {
         state.status = 'loading';
       })
       .addCase(
-        getLocationAsync.fulfilled,
-        (state, action: PayloadAction<number>) => {
-          state.woeid = action.payload;
+        getWeatherFromNameAsync.fulfilled,
+        (state, action: any) => {
+          state.weather = action.payload
         }
       )
       .addCase(getWeatherAsync.pending, state => {
