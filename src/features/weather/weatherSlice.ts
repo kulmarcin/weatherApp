@@ -1,6 +1,10 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
 
+interface latLon {
+  lat: number;
+  lon: number;
+}
 
 interface gotWeather {
   name: string;
@@ -23,31 +27,42 @@ const initialState: WeatherState = {
 };
 
 export const getWeatherFromNameAsync = createAsyncThunk(
-  'weather/getLocation',
-  async (query: string):Promise<gotWeather> => {
-    
-      const response = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?q=${query}&appid=${process.env.REACT_APP_KEY}&units=metric`
-      );
-      const data = await response.json();
-      const obj = {
-        name: data.name,
-        main: data.weather.main,
-        description: data.weather.description,
-        temp: data.main.temp,
-        feels_like: data.main.feels_like,
-        temp_min: data.main.temp_min,
-        temp_max: data.main.temp_max
-      };
-      return obj;
-    
+  'weather/getWeatherFromName',
+  async (query: string): Promise<gotWeather> => {
+    const response = await fetch(
+      `https://api.openweathermap.org/data/2.5/weather?q=${query}&appid=${process.env.REACT_APP_KEY}&units=metric`
+    );
+    const data = await response.json();
+    const obj = {
+      name: data.name,
+      main: data.weather.main,
+      description: data.weather.description,
+      temp: data.main.temp,
+      feels_like: data.main.feels_like,
+      temp_min: data.main.temp_min,
+      temp_max: data.main.temp_max
+    };
+    return obj;
   }
 );
 
-export const getWeatherAsync = createAsyncThunk(
+export const getWeatherFromLocationAsync = createAsyncThunk(
   'weather/getWeather',
-  async (amount: number) => {
-    console.log('got weather for woeid');
+  async (fetchData: latLon): Promise<gotWeather> => {
+    const response = await fetch(
+      `https://api.openweathermap.org/data/2.5/weather?lat=${fetchData.lat}&lon=${fetchData.lon}&appid=${process.env.REACT_APP_KEY}&units=metric`
+    );
+    const data = await response.json();
+    const obj = {
+      name: data.name,
+      main: data.weather.main,
+      description: data.weather.description,
+      temp: data.main.temp,
+      feels_like: data.main.feels_like,
+      temp_min: data.main.temp_min,
+      temp_max: data.main.temp_max
+    };
+    return obj;
   }
 );
 
@@ -60,17 +75,20 @@ export const weatherSlice = createSlice({
       .addCase(getWeatherFromNameAsync.pending, state => {
         state.status = 'loading';
       })
-      .addCase(
-        getWeatherFromNameAsync.fulfilled,
-        (state, action: any) => {
-          state.weather = action.payload
-        }
-      )
-      .addCase(getWeatherAsync.pending, state => {
+      .addCase(getWeatherFromNameAsync.fulfilled, (state, action) => {
+        state.weather = action.payload;
+      })
+      .addCase(getWeatherFromNameAsync.rejected, (state, action) => {
+        state.status = 'failed';
+      })
+      .addCase(getWeatherFromLocationAsync.pending, state => {
         state.status = 'loading';
       })
-      .addCase(getWeatherAsync.fulfilled, (state, action) => {
-        console.log('state updating');
+      .addCase(getWeatherFromLocationAsync.fulfilled, (state, action) => {
+        state.weather = action.payload;
+      })
+      .addCase(getWeatherFromLocationAsync.rejected, (state, action) => {
+        state.status = 'failed';
       });
   }
 });
