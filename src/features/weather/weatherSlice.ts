@@ -10,15 +10,21 @@ interface gotWeather {
   name: string;
   main: string;
   description: string;
+  icon: string;
   temp: number;
   feels_like: number;
   temp_min: number;
   temp_max: number;
+  humidity: number;
+  pressure: number;
+  wind_speed: number;
+  wind_deg: number;
+  wind_gusts: number;
 }
 
 export interface WeatherState {
   weather: gotWeather | null;
-  status: 'idle' | 'loading' | 'failed';
+  status: 'idle' | 'loading' | 'failed' | 'success';
 }
 
 const initialState: WeatherState = {
@@ -35,12 +41,18 @@ export const getWeatherFromNameAsync = createAsyncThunk(
     const data = await response.json();
     const obj = {
       name: data.name,
-      main: data.weather.main,
-      description: data.weather.description,
-      temp: data.main.temp,
-      feels_like: data.main.feels_like,
-      temp_min: data.main.temp_min,
-      temp_max: data.main.temp_max
+      main: data.weather[0].main,
+      description: data.weather[0].description,
+      icon: data.weather[0].icon,
+      temp: Math.round(data.main.temp),
+      feels_like: Math.round(data.main.feels_like),
+      temp_min: Math.round(data.main.temp_min),
+      temp_max: Math.round(data.main.temp_max),
+      humidity: data.main.humidity,
+      pressure: data.main.pressure,
+      wind_speed: data.wind.speed,
+      wind_deg: data.wind.deg,
+      wind_gusts: data.wind.gust
     };
     return obj;
   }
@@ -55,12 +67,18 @@ export const getWeatherFromLocationAsync = createAsyncThunk(
     const data = await response.json();
     const obj = {
       name: data.name,
-      main: data.weather.main,
-      description: data.weather.description,
-      temp: data.main.temp,
-      feels_like: data.main.feels_like,
-      temp_min: data.main.temp_min,
-      temp_max: data.main.temp_max
+      main: data.weather[0].main,
+      description: data.weather[0].description,
+      icon: data.weather[0].icon,
+      temp: Math.round(data.main.temp),
+      feels_like: Math.round(data.main.feels_like),
+      temp_min: Math.round(data.main.temp_min),
+      temp_max: Math.round(data.main.temp_max),
+      humidity: data.main.humidity,
+      pressure: data.main.pressure,
+      wind_speed: data.wind.speed,
+      wind_deg: data.wind.deg,
+      wind_gusts: data.wind.gust
     };
     return obj;
   }
@@ -77,6 +95,7 @@ export const weatherSlice = createSlice({
       })
       .addCase(getWeatherFromNameAsync.fulfilled, (state, action) => {
         state.weather = action.payload;
+        state.status = 'success';
       })
       .addCase(getWeatherFromNameAsync.rejected, (state, action) => {
         state.status = 'failed';
@@ -86,14 +105,13 @@ export const weatherSlice = createSlice({
       })
       .addCase(getWeatherFromLocationAsync.fulfilled, (state, action) => {
         state.weather = action.payload;
+        state.status = 'success';
       })
       .addCase(getWeatherFromLocationAsync.rejected, (state, action) => {
         state.status = 'failed';
       });
   }
 });
-
-export const {} = weatherSlice.actions;
 
 export const selectWeather = (state: RootState) => state.weather;
 
