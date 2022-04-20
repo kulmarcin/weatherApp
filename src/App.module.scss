@@ -1,14 +1,118 @@
 @use 'globals' as *;
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,700;1,400&display=swap');
 
 * {
   box-sizing: border-box;
-  margin:0;
-  padding:0;
+  margin: 0;
+  padding: 0;
   cursor: default;
   color: $text;
+  font-family: 'Open Sans', sans-serif;
 }
 
 .App {
+  text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.3);
   text-align: center;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: #c9d6ff;
+  background: -webkit-linear-gradient(to right, #e2e2e2, #c9d6ff);
+  background: linear-gradient(to right, #e2e2e2, #c9d6ff);
 }
 
+img {
+  filter: drop-shadow(20px 2px 4px);
+}
+
+h1 {
+  font-size: 3rem;
+}
+
+.Main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .Temp {
+    font-weight: bold;
+    font-size: 3rem;
+  }
+
+  .RealFeel {
+    font-style: italic;
+  }
+}
+
+.Downside {
+  margin-top: 3rem;
+}
+
+.WeatherMain {
+  font-size: 2.5rem;
+}
+
+.MinMax {
+  margin: 0.5rem;
+  span {
+    margin: 0 0.5rem;
+  }
+}
+
+p {
+  margin-top: 1rem;
+}
+
+button {
+  box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.3);
+  background-color: rgba(0,0,0,0.2);
+  width: 5rem;
+  height: 2.1rem;
+  outline: none;
+  cursor: pointer;
+  margin-top: 1.5rem;
+  border: 1px solid black;
+  border-radius: 25px;
+  transition: transform 0.5s ease-in-out;
+
+  &:hover {
+    transform: translateY(-3px);
+  }
+}
+
+.Input {
+  opacity: 0;
+  display: flex;
+  margin-top: 1rem;
+  transition: opacity 0.2s ease-out;
+
+  input {
+    box-shadow: -2px 3px 10px rgba(0, 0, 0, 0.3);
+
+    padding-left: 0.5rem;
+    height: 2rem;
+    cursor: pointer;
+    background-color: inherit;
+    outline: none;
+    border: 1px solid black;
+    border-radius: 10px 0 0 10px;
+
+    &::placeholder {
+      text-align: center;
+      color: black;
+      font-style: italic;
+    }
+  }
+
+  button {
+    height: 2rem;
+    margin: 0;
+    border-radius: 0 10px 10px 0;
+  }
+}
+
+.Active {
+  opacity: 1;
+}
