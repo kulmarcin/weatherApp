@@ -11,9 +11,10 @@
 }
 
 .App {
+  padding-top: 2rem;
   text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.3);
   text-align: center;
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -24,7 +25,7 @@
 }
 
 img {
-  filter: drop-shadow(20px 2px 4px);
+  filter: drop-shadow(10px 2px 8px);
 }
 
 h1 {
@@ -67,7 +68,7 @@ p {
 
 button {
   box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.3);
-  background-color: rgba(0,0,0,0.2);
+  background-color: rgba(0, 0, 0, 0.2);
   width: 5rem;
   height: 2.1rem;
   outline: none;
@@ -115,4 +116,12 @@ button {
 
 .Active {
   opacity: 1;
+}
+
+.Title {
+  font-weight: bold;
+}
+
+h3 {
+  color: rgba(0, 0, 0, 0.6);
 }
