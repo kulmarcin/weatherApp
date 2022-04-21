@@ -1,6 +1,8 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
 
+import { countryList } from '../../countries';
+
 interface latLon {
   lat: number;
   lon: number;
@@ -20,6 +22,8 @@ interface gotWeather {
   wind_speed: number;
   wind_deg: number;
   wind_gusts: number;
+  date: string;
+  country: string;
 }
 
 export interface WeatherState {
@@ -52,14 +56,16 @@ export const getWeatherFromNameAsync = createAsyncThunk(
       pressure: data.main.pressure,
       wind_speed: data.wind.speed,
       wind_deg: data.wind.deg,
-      wind_gusts: data.wind.gust
+      wind_gusts: data.wind.gust,
+      date: new Date(data.dt*1000).toLocaleString(), 
+      country: countryList[data.sys.country]
     };
     return obj;
   }
 );
 
 export const getWeatherFromLocationAsync = createAsyncThunk(
-  'weather/getWeather',
+  'weather/getWeatherFromLocation',
   async (fetchData: latLon): Promise<gotWeather> => {
     const response = await fetch(
       `https://api.openweathermap.org/data/2.5/weather?lat=${fetchData.lat}&lon=${fetchData.lon}&appid=${process.env.REACT_APP_KEY}&units=metric`
@@ -78,7 +84,9 @@ export const getWeatherFromLocationAsync = createAsyncThunk(
       pressure: data.main.pressure,
       wind_speed: data.wind.speed,
       wind_deg: data.wind.deg,
-      wind_gusts: data.wind.gust
+      wind_gusts: data.wind.gust,
+      date: new Date(data.dt*1000).toLocaleString(),
+      country: countryList[data.sys.country]
     };
     return obj;
   }

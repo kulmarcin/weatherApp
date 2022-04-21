@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import styles from './App.module.scss';
 import { useAppDispatch, useAppSelector } from './app/hooks';
 import {
@@ -10,8 +10,11 @@ import {
 function App() {
   const [input, setInput] = useState('');
   const [showInput, setShowInput] = useState(false);
+  
   const weather = useAppSelector(selectWeather);
   const dispatch = useAppDispatch();
+  
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
@@ -67,12 +70,19 @@ function App() {
   return (
     <div className={styles.App}>
       {weather.status === 'failed' && (
-        <button onClick={() => window.location.reload()}>Go back</button>
+        <div>
+          <h2>Not found</h2>
+          <button onClick={() => window.location.reload()}>Go back</button>
+        </div>
       )}
 
       {weather.status === 'success' && weather.weather && (
         <div>
           <h1>{weather.weather.name}</h1>
+          <h3>{weather.weather.country}</h3>
+          <h4 style={{ marginTop: '0.5rem', color: 'rgba(0,0,0,0.7)' }}>
+            {weather.weather.date}
+          </h4>
           <div className={styles.Main}>
             <img
               src={`https://openweathermap.org/img/wn/${weather.weather.icon}@4x.png`}
@@ -97,14 +107,21 @@ function App() {
               </span>
             </p>
             <div className={styles.Downside}>
-              <p>Humidity: {weather.weather.humidity}%</p>
-              <p>Pressure: {weather.weather.pressure} hPa</p>
               <p>
-                Wind: {directionHandler(weather.weather.wind_deg)}{' '}
+                <span className={styles.Title}>Humidity:</span>{' '}
+                {weather.weather.humidity}%
+              </p>
+              <p>
+                <span className={styles.Title}>Pressure:</span>{' '}
+                {weather.weather.pressure} hPa
+              </p>
+              <p>
+                <span className={styles.Title}>Wind:</span>{' '}
+                {directionHandler(weather.weather.wind_deg)}{' '}
                 {(weather.weather.wind_speed * 3.6).toFixed(2)} km/h
               </p>
               <p>
-                Wind gusts:{' '}
+                <span className={styles.Title}>Wind gusts:</span>{' '}
                 {weather.weather.wind_gusts
                   ? (weather.weather.wind_gusts * 3.6).toFixed(2)
                   : (weather.weather.wind_speed * 3.6).toFixed(2)}{' '}
@@ -115,7 +132,10 @@ function App() {
           {!showInput && (
             <button
               className={styles.OtherCity}
-              onClick={() => setShowInput(state => !state)}
+              onClick={() => {
+                setShowInput(state => !state);
+                inputRef.current!.focus();
+              }}
             >
               Other City
             </button>
@@ -125,6 +145,7 @@ function App() {
 
       <div className={`${styles.Input} ${showInput ? styles.Active : ''}`}>
         <input
+          ref={inputRef}
           type="text"
           onKeyDown={e => {
             if (e.key === 'Enter') {
